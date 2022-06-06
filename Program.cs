@@ -6,7 +6,7 @@ namespace Queen_8
     {
         static void Main(string[] args)
         {
-
+            //starting
         }
     }
 }
