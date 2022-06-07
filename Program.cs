@@ -6,34 +6,50 @@ namespace Queen_8
     {
         static void Main(string[] args)
         {
-            Queen8 q8 = new Queen8();
+            Console.Title = "Eight Queens Puzzle";
+
+            Queen8 q8 = new ();
             string[,] field = new string[9, 9];
 
             q8.InitField(field);
+            PrintField(field);
+            Console.WriteLine("\n The eight queens puzzle:\n Place eight queens on an 8x8 chessboard such that none of them attack one another.\n All variants:");
 
             Console.WriteLine();
 
             tstart = DateTime.Now;
-            string result = q8.provM();
+            string result = q8.CheckMain();
             tfinish = DateTime.Now;
 
             Console.WriteLine(result);
-            TimePoisk();
+            TimeSearch();
+            while (true)
+            {
+                Console.WriteLine("\nChoose variant to draw(1-92):");
+                string data = Console.ReadLine();
+                if (data == "x")
+                    Environment.Exit(0);
+                int number = ParseData(data);
+                Console.Write("Queens places: ");
+                int[] pos = q8.ChoosePositions(number);
+                for (int i = 0; i < pos.Length; i++)
+                    Console.Write(q8.name[i] + pos[i] + " ");
+                Console.WriteLine();
 
-            Console.WriteLine("\nВведите вариант для расстановки:");
-            string data = Console.ReadLine();
-            int[] pos = q8.GetPositions(data);
-            for (int i = 0; i < pos.Length; i++)
-                Console.Write(pos[i]+ " ");
-            Console.WriteLine();
-            q8.PutQueen(field, pos);
-            PrintField(field);
+                Queen8.PutQueen(field, pos);
+                PrintField(field);
+                q8.InitField(field);
+            }
 
 
         }
 
-        public static DateTime tstart, tfinish;
+        internal static DateTime tstart, tfinish;
 
+        /// <summary>
+        /// отрисовка доски в консоли
+        /// </summary>
+        /// <param name="field"></param>
         internal static void PrintField(string[,] field)
         {
             for (int i = 0; i < field.GetLength(0); i++, Console.WriteLine())
@@ -47,13 +63,16 @@ namespace Queen_8
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.ForegroundColor = ConsoleColor.Gray;
                         Console.Write("{0,3}", field[i, j]);
                     }
                 }
         }
 
-        public static void TimePoisk()
+        /// <summary>
+        /// вывод затраченного времени на поиск вариантов
+        /// </summary>
+        internal static void TimeSearch()
         {
             int dt, ds, dm, dh;
             dt = tfinish.Hour * 3600 + tfinish.Minute * 60 + tfinish.Second - tstart.Hour * 3600 - tstart.Minute * 60 - tstart.Second;
@@ -61,11 +80,29 @@ namespace Queen_8
             dm = (dt - dh * 3600) / 60;
             ds = (dt - dh * 3600 - dm * 60);
             if (dt < 60)
-                Console.WriteLine("Время поиска: секунд - {0}", ds);
+                Console.WriteLine("Search time: seconds - {0}", ds);
             else if (dt < 3600)
-                Console.WriteLine("Время поиска: минут - {0}, секунд - {1}", dm, ds);
+                Console.WriteLine("Search time: minutes - {0}, seconds - {1}", dm, ds);
             else
-                Console.WriteLine("Время поиска: часов - {0}, минут - {1}, секунд - {2}", dh, dm, ds);
+                Console.WriteLine("Search time: hours - {0}, minutes - {1}, second - {2}", dh, dm, ds);
+        }
+
+        internal static int ParseData(string data)
+        {
+            int number;
+            bool check;
+            do
+            {
+                check = int.TryParse(data, out number);
+                if (!check || number < 1 || number > 92)
+                {
+                    Console.WriteLine("Enter correct number(1-92)");
+                    data = Console.ReadLine();
+                }
+                else return number;
+            }
+            while (!check || number < 1 || number > 92);
+            return number ;
         }
     }
 }
